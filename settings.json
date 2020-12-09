@@ -1,0 +1,10 @@
+{
+  "settings": [
+    {
+      "file_name": "test.bin",
+      "base64_decode_target": ["host", "ident", "message", "point", "worker_id"],
+      "send_target": "fluentd",
+      "target_path": "192.168.10.53:20023"
+    }
+  ]
+}
