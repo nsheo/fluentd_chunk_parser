@@ -83,7 +83,7 @@ func RunItem(setting Setting){
 
 func OutputData(setting Setting, data map[string] interface{}, tag string, time float64) {
     timeStr := fmt.Sprintf("%f", time)
-    jsonBuffer := bytes.NewBuffer([]byte{})
+    var jsonBuffer = bytes.NewBuffer([]byte{})
     jsonEncoder := json.NewEncoder(jsonBuffer)
     jsonEncoder.SetEscapeHTML(false)
     jsonEncoder.Encode(data)
@@ -98,19 +98,23 @@ func OutputData(setting Setting, data map[string] interface{}, tag string, time 
         }
         httpTarget = httpTarget +tag +"?time="+timeStr
         //httpTarget = httpTarget +"htest.logs?time="+timeStr
-        req, _ := http.NewRequest("POST", httpTarget, jsonBuffer)
-        client := &http.Client{}
-        res, httpError := client.Do(req)
-        if httpError != nil {
-            panic(fmt.Sprintf("HTTP Sending Error : %v", httpError))
-        }
-        defer res.Body.Close()
-        fmt.Println("Fluentd HTTP response Status:", res.Status)
+        HTTPSender(httpTarget, jsonBuffer)
     } else if setting.SendTarget == "stdout" {
         fmt.Println("Tag: %s, Time: %s, Record: %s", tag, timeStr, jsonBuffer.String())
     } else {
         fmt.Println("Tag: %s, Time: %s, Record: %s", tag, timeStr, jsonBuffer.String())
     }
+}
+
+func HTTPSender(url string, b *bytes.Buffer) {
+    req, _ := http.NewRequest("POST", url, b)
+    client := &http.Client{}
+    res, httpError := client.Do(req)
+    if httpError != nil {
+        fmt.Sprintf("HTTP Sending Error : %v", httpError)
+    }
+    defer res.Body.Close()
+    fmt.Println("Fluentd HTTP response Status:", res.Status)
 }
 
 func main(){
