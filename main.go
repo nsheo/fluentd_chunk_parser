@@ -69,10 +69,12 @@ func RunItem(setting Setting){
         _ = json.Unmarshal([]byte(bufTarget), &arr)
         var bufMap map[string]interface{}
         bufMap = arr[2].(map[string]interface{})
-        for k, v := range bufMap {
-            if Find(decodeTarget, k) {
-                sDec, _ := base64.StdEncoding.DecodeString(v.(string))
-                bufMap[k] = string(sDec)
+        if len(decodeTarget) > 0 {
+            for k, v := range bufMap {
+                if Find(decodeTarget, k) {
+                    sDec, _ := base64.StdEncoding.DecodeString(v.(string))
+                    bufMap[k] = string(sDec)
+                }
             }
         }
         OutputData(setting, bufMap, arr[0].(string), arr[1].(float64))
